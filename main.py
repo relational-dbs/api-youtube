@@ -1,61 +1,31 @@
-from fastapi import FastAPI
+from dataclasses import field
+
+from fastapi import Depends, FastAPI, Query, Request
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 from models.store import Articulo, Etiqueta
 from models.users import Usuario
+from persistence.db_connection import DBSessionManager, DBSessionMiddleware
+from persistence.entities import Video
 
 # 1. Creamos la instancia de la aplicación
 app = FastAPI()
+db_session_manager = DBSessionManager()
+app.add_middleware(DBSessionMiddleware, db_session_manager=db_session_manager)
 
-router = APIRouter(prefix="/datos", tags=["Usuarios"])
 
-
-@app.get("/articulos")
-def get_articulos() -> list[Articulo]:
-    articulo = Articulo(
-        titulo="Mi primer artículo",
-        contenido="Este es el contenido del artículo",
-        etiquetas=[
-            Etiqueta(nombre="Python", color="azul"),
-            Etiqueta(nombre="FastAPI", color="rojo"),
-        ],
+@app.get("/videos")
+def get_videos(
+    limit: int = Query(default=10, ge=1, le=50),
+    offset: int = Query(default=0, ge=0),
+    db_session: Session = Depends(DBSessionMiddleware.get_db_session),
+):
+    videos = (
+        db_session.query(Video)
+        .order_by(Video.id.desc())
+        .limit(limit)
+        .offset(offset)
+        .all()
     )
-    return [articulo]
-
-
-@app.post("/usuarios")
-def crear_usuario(usuario: Usuario):
-    return usuario
-
-
-# 2. Definimos la ruta (Endpoint) y el verbo HTTP (GET)
-@app.post("/testpath")
-def leer_raiz():
-    # 3. Retornamos un diccionario (Se convierte a JSON)
-    return {"mensaje": "¡Hola, Clase!"}
-
-
-# Ejemplo: GET /usuarios/12
-@app.get("/usuarios/{usuario_id}")
-def obtener_usuario(usuario_id: int):
-    return {"id": usuario_id, "nombre": "Juan"}
-
-
-# Ejemplo: PUT /usuarios/12
-@app.put("/usuarios/{usuario_id}")
-def actualizar_usuario(usuario_id: int):
-    return "Usuario actualizado"
-
-
-# Ejemplo: GET /items?limit=10&skip=5
-@app.get("/items")
-def listar_items(limit: int = 10, skip=12):
-    return {"limit": limit, "skip": skip}
-
-
-@router.get("/lista", status_code=418)
-def listar_usuarios():
-    return [{"nombre": "Ana"}, {"nombre": "Juan"}]
-
-
-app.include_router(router=router)
+    return videos
