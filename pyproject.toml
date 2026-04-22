@@ -1,10 +1,12 @@
 [project]
-name = "clase-uv"
+name = "api-youtube"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "alembic>=1.18.4",
+    "colorlog>=6.10.1",
     "fastapi[standard]>=0.135.3",
     "psycopg[binary]>=3.3.3",
     "pydantic>=2.12.5",

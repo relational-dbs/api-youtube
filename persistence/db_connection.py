@@ -14,6 +14,8 @@ from contextlib import contextmanager
 from sqlalchemy.orm import Session
 from starlette.middleware.base import BaseHTTPMiddleware
 
+from util.logger import LoggerSessionManager
+
 DATABASE_URL = "postgresql+psycopg://postgres:password@localhost:5423/youtube"
 
 
@@ -21,7 +23,7 @@ class DBSessionManager:
 
     def __init__(
         self,
-        # logger_session_manager: LoggerSessionManager,
+        logger_session_manager: LoggerSessionManager,
         db_url: str = DATABASE_URL,
         echo: bool = False,
     ):
@@ -38,8 +40,8 @@ class DBSessionManager:
         # Base.metadata.create_all(bind=self.engine)
 
         self.engine = create_engine(db_url, echo=echo, future=True)
-        # self.logger_session_manager = logger_session_manager
-        # self.logger = self.logger_session_manager.get_logger()
+        self.logger_session_manager = logger_session_manager
+        self.logger = self.logger_session_manager.get_logger()
         self.SessionLocal = sessionmaker(
             bind=self.engine, autoflush=False, autocommit=False, future=True
         )
