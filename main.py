@@ -4,6 +4,7 @@ import uuid
 
 from fastapi import Depends, FastAPI, Query, Request
 from fastapi import APIRouter
+from fastar import FastarError
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from models.store import Articulo, Etiqueta
@@ -20,7 +21,7 @@ from util import logger
 
 logger_session_manager = logger.LoggerSessionManager()
 db_session_manager = DBSessionManager(
-    logger_session_manager=logger_session_manager, echo=True
+    logger_session_manager=logger_session_manager, echo=False
 )
 
 app = FastAPI()
