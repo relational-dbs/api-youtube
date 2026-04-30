@@ -4,7 +4,7 @@ import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from models.videos import (
+from routers.models.videos import (
     VideoResponseModel as PydanticVideoResponseModel,
     VideoSimpleResponseModel as PydanticVideoSimpleResponseModel,
     VideoCreateModel as PydanticVideoCreateModel,
