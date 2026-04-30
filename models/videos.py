@@ -6,7 +6,6 @@ from pydantic import BaseModel, ConfigDict
 class VideoCreateModel(BaseModel):
     titulo: str
     descripcion: str
-    fecha_creacion: datetime
     duracion: int
     
     model_config = ConfigDict(from_attributes=True)

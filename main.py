@@ -15,17 +15,15 @@ from models.videos import (
     VideoSimpleResponseModel as PydanticVideoSimpleResponseModel,
     VideoCreateModel as PydanticVideoCreateModel,
 )
-from routers import video
+from routers import auth, video
 from util import logger
 
-# 1. Creamos la instancia de la aplicación
-app = FastAPI()
-
 logger_session_manager = logger.LoggerSessionManager()
-
 db_session_manager = DBSessionManager(
     logger_session_manager=logger_session_manager, echo=True
 )
-app.add_middleware(DBSessionMiddleware, db_session_manager=db_session_manager)
 
+app = FastAPI()
+app.add_middleware(DBSessionMiddleware, db_session_manager=db_session_manager)
 app.include_router(video.router)
+app.include_router(auth.router)
